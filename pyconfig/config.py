@@ -5,6 +5,7 @@ import configparser
 
 class Config:
     contents = {}
+
     def __init__(self, filename='config.ini', path='.', write_on_change=False, default_section='default',
                  *args, **kwargs):
         """

@@ -1,5 +1,6 @@
 PyConfig - A Simple Wrapper around configparser.
 ===============================================
+Written for Python 3.6, but should work with 3.3+
 Usage:
 =====
 
@@ -37,7 +38,8 @@ Using Default Values
     'Foo'
     >>> c.get('test1')
     'Foo'
-    # Get from a non-default section
+
+Get from a non-default section
     >>> c.get('test2', section='Bar')
 
 Adding Values
