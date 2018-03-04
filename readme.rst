@@ -1,11 +1,11 @@
 PyConfig - A Simple Wrapper around configparser.
 ===============================================
 Written for Python 3.6, but should work with 3.3+
+
 Usage:
 =====
 
 Basic Usage
-.. code-block:: python
     >>> c = Config()
     >>> c.get('test')
     False
