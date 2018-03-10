@@ -38,6 +38,9 @@ Using Default Values
     'Foo'
     >>> c.get('test1')
     'Foo'
+Items can be accessed from class attributes (if they are in the default section)
+    >>> c.test1
+    'Foo'
 
 Get from a non-default section
     >>> c.get('test2', section='Bar')
@@ -58,3 +61,6 @@ Even use as a context manager, contents is written on __exit__
 
 Update the internal copy with the file
     >>> c.update()
+
+On inital reading of the file - if any unparseable lines are found they are auto-commented out.
+However comments are removed on writing the file, due to the background libary (for now!)

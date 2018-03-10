@@ -72,7 +72,8 @@ class TestGet(unittest.TestCase):
         self.s.add('Option', 'Value', section='Test')
 
     def tearDown(self):
-        os.remove(self.s.filepath)
+        if os.path.isfile(self.s.filepath):
+            os.remove(self.s.filepath)
 
     def test_get_false(self):
         self.assertFalse(self.s.get('ValueNotPresent'))
@@ -102,13 +103,27 @@ class TestGet(unittest.TestCase):
         self.assertEqual(self.s.get('Foo', default='Bar', add=True, section='Test'), 'Bar')
         self.assertEqual(self.s.get('Foo', section='Test'), 'Bar')
 
+    def test_get_attr(self):
+        try:
+            self.s.Option
+        except Exception:
+            self.assertTrue(False)
+        self.assertTrue(True)
+
+    def test_get_missing_attr(self):
+        with self.assertRaises(AttributeError):
+            self.s.missing_value
+
+
+
 
 class TestAdd(unittest.TestCase):
     def setUp(self):
         self.s = Config()
 
     def tearDown(self):
-        os.remove(self.s.filepath)
+        if os.path.isfile(self.s.filepath):
+            os.remove(self.s.filepath)
 
     def test_add(self):
         self.assertFalse(self.s.get('Foo'))

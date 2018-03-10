@@ -2,6 +2,8 @@
 import os
 import configparser
 
+import re
+
 
 class Config:
     contents = {}
@@ -21,8 +23,10 @@ class Config:
 
         self.default_section = default_section
         self.write_on_change = write_on_change
+        self._update_count = 0
+        self._ignore_update_count = False
         self.update()
-        self.write()
+        self._ignore_update_count = True
 
     def __enter__(self):
         return self
@@ -35,7 +39,32 @@ class Config:
 
     def update(self):
         """ Updates the internal copy with the contents on disk"""
-        self.contents = self.config.read(self.filepath)
+        self._update_count += 1
+        try:
+            self.contents = self.config.read(self.filepath)
+        except configparser.MissingSectionHeaderError as err:
+            raise err
+        except configparser.ParsingError as err:
+            if not self._ignore_update_count:
+                # Remove lines which have errors in them
+                line = re.findall(r' ([0-9]+)\]:', err.message)[0]
+                line = int(line) - 1
+                with open(self.filepath) as f:
+                    lines = f.readlines()
+                lines[line] = f'# ERROR IN THIS LINE: {lines[line]}'
+                with open(self.filepath, 'w') as f:
+                    f.writelines(lines)
+                # Excessive recursion prevention
+                if self._update_count < 1000:
+                    self.update()
+                else:
+                    raise RecursionError('Too many errors in config file')
+
+    def __getattr__(self, item):
+        try:
+            return self.config[self.default_section][item]
+        except KeyError:
+            raise AttributeError(f'{item} not found in {self}')
 
     def add(self, option, value, section=None):
         """
